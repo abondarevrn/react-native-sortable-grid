@@ -117,6 +117,8 @@ class SortableGrid extends Component {
       deleteBlockOpacity: new Animated.Value(1),
       deletedItems: []
     }
+    
+    this.debouncedAssessGridSize = _.debounce(this.assessGridSize, 500);
   }
 
   toggleDeleteMode = () => {
@@ -279,16 +281,25 @@ class SortableGrid extends Component {
     this.setState({deletionSwipePercent})
   }
 
-  assessGridSize = ({nativeEvent}) => {
-    console.log("Calculating grid size");
+  onGridLayout = (params) => {
+    const nativeEvent = _.cloneDeep(params.nativeEvent);
+    if (this.firstInitDone) {
+      this.debouncedAssessGridSize(nativeEvent);
+    } else {
+      this.firstInitDone = true
+      this.assessGridSize(nativeEvent);
+    }
+  }
+
+  assessGridSize = (nativeEvent) => {
     if (this.props.itemWidth && this.props.itemWidth < nativeEvent.layout.width) {
       this.itemsPerRow = Math.floor(nativeEvent.layout.width / this.props.itemWidth)
-      this.blockWidth = nativeEvent.layout.width / this.itemsPerRow
+      this.blockWidth = nativeEvent.layout.width / this.itemsPerRow - 2
       this.blockHeight = this.props.itemHeight || this.blockWidth
     }
     else {
-      this.blockWidth = nativeEvent.layout.width / this.itemsPerRow
-      this.blockHeight = this.blockWidth
+      this.blockWidth = nativeEvent.layout.width / this.itemsPerRow - 2
+      this.blockHeight = this.props.itemHeight || this.blockWidth
     }
     if (this.state.gridLayout != nativeEvent.layout) {
       this.setState({
@@ -298,7 +309,7 @@ class SortableGrid extends Component {
       })
     }
   }
-
+  
   reAssessGridRows = () => {
     let oldRows = this.rows
     this.rows = Math.ceil(this.items.length / this.itemsPerRow)
