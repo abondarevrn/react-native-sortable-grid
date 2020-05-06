@@ -49,7 +49,7 @@ class SortableGrid extends Component {
     render = () =>
       <Animated.View
         style={ this._getGridStyle() }
-        onLayout={this.assessGridSize}
+        onLayout={this.onGridLayout}
       >
         { this.state.gridLayout &&
           this.items.map( (item, key) =>
