@@ -477,21 +477,29 @@ class SortableGrid extends Component {
 
   _defaultDragActivationWiggle = () => {
     if (!this.dragStartAnimation) {
-      this.state.startDragWiggle.setValue(20)
-      Animated.spring(this.state.startDragWiggle, {
-        toValue: 0,
-        velocity: 2000,
-        tension: 2000,
-        friction: 5
+      this.state.startDragWiggle.setValue(1)
+      Animated.timing(this.state.startDragWiggle, {
+        duration:100,
+        toValue:1.1,
       }).start()
     }
   }
 
   _blockActivationWiggle = () => {
     return this.dragStartAnimation ||
-    { transform: [{ rotate: this.state.startDragWiggle.interpolate({
-      inputRange:  [0, 360],
-      outputRange: ['0 deg', '360 deg']})}]}
+      { transform: [
+          {
+            scale:this.state.startDragWiggle
+          }
+        ],
+        shadowColor:'#000000',
+        shadowOpacity:0.2,
+        shadowRadius:6,
+        shadowOffset:{
+          width:1,
+          height:1,
+        },
+      }
   }
 
   _assignReceivedPropertiesIntoThis(properties) {
